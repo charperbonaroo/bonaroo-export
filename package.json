@@ -15,5 +15,8 @@
   "scripts": {
     "build": "tsc",
     "test": "jest"
+  },
+  "peerDependencies": {
+    "xlsx": "^0.16.9"
   }
 }
