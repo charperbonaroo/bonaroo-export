@@ -1,6 +1,6 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
-// import minify from 'rollup-plugin-babel-minify';
+import minify from 'rollup-plugin-babel-minify';
 import ignore from "rollup-plugin-ignore"
 import pkg from './package.json';
 
@@ -20,6 +20,6 @@ export default [{
     ignore(["fs", "crypto", "stream"]),
     resolve(),
     commonjs(),
-    // minify({ comments: false }),
+    minify({ comments: false }),
   ],
 }];
