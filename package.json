@@ -1,7 +1,7 @@
 {
   "name": "bonaroo-export",
   "browser": "dist/bonaroo-export.min.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/main.js",
   "files": ["dist"],
   "repository": "git@github.com:charperbonaroo/bonaroo-export.git",
@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "ci": "(npm run test-build && npm run rollup) & npm t & wait",
+    "ci": "(npm run build && npm run test-build && npm run rollup) & npm t & wait",
     "prepublishOnly": "npm run ci && npm run rollup",
     "rollup": "rollup -c",
     "test": "jest",
