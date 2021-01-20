@@ -13,8 +13,13 @@ export async function exportPdf(inputConfig: Readonly<ExportConfig>): Promise<IF
   const arrayOfArrays = createTable(config);
   arrayOfArrays.unshift(getHeader(config));
 
-  const docDefinition = {
+  const pdf = pdfMake.createPdf({
+    pageMargins: [ 8, 8, 8, 8 ],
     header: config.name,
+    defaultStyle: {
+      fontSize: 8,
+      lineHeight: 0.8,
+    },
     content: [{
       layout: "lightHorizontalLines",
       table: {
@@ -23,9 +28,8 @@ export async function exportPdf(inputConfig: Readonly<ExportConfig>): Promise<IF
         body: arrayOfArrays,
       },
     }]
-  };
+  });
 
-  const pdf = pdfMake.createPdf(docDefinition);
   const data = await new Promise<ArrayBuffer>((resolve) => pdf.getBuffer(resolve));
 
   return {
