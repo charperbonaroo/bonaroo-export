@@ -63,7 +63,7 @@ function getHeader(config: IExportConfig): string[] {
 function createTable(config: IExportConfig): any[][] {
   const { rows, cols } = config;
   const colsWithFormatters = cols.map(({ format, prop }) => [ format || (x => x), prop ] as [ TExportFormat, TExportProp ]);
-  const createRow = (row: any) => colsWithFormatters.map(([ format, prop ]) => format(get(row, prop), prop, row));
+  const createRow = (row: any) => colsWithFormatters.map(([ format, prop ]) => format(get(row, prop), prop, row) || "");
   return rows.map(createRow);
 }
 
