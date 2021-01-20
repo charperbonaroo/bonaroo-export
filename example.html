@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>bonaroo-export test</title>
+<script src="./dist/bonaroo-export.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  if (typeof BonarooExport.exportPdf === "function"
+  && typeof BonarooExport.exportXlsx === "function") {
+    document.body.appendChild(document.createTextNode("OK!"));
+  } else {
+    document.body.appendChild(document.createTextNode("ERROR!"));
+  }
+});
+</script>

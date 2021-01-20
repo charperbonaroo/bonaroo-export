@@ -4,7 +4,9 @@ import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { get } from "lodash";
 
-(<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
+if (typeof window === "undefined") {
+  (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
+}
 
 export async function exportPdf(inputConfig: Readonly<ExportConfig>): Promise<IFile> {
   const config = parseExportConfig(inputConfig);

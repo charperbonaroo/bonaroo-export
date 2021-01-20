@@ -16,6 +16,16 @@ fs.writeFileSync(file.name, Buffer.from(file.data)); // < save to file (nodejs)
 const url = URL.createObjectURL(new Blob([ file.data ], { type: file.type }));
 ```
 
+## Publishing
+
+```sh
+git add --all
+git commit -m "Describe your changes here."
+npm version minor
+git push
+npm publish
+```
+
 ## About the tests
 
 The test do not verify the correctness of the results, they just generate an excel & pdf file. There is no easy & reliable way to verify the generated files without checking them manually, so that's what you're supposed to do:
