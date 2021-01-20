@@ -3,6 +3,7 @@
   "browser": "dist/bonaroo-export.min.js",
   "version": "1.0.0",
   "main": "dist/main.js",
+  "files": ["dist"],
   "repository": "git@github.com:charperbonaroo/bonaroo-export.git",
   "author": "Toby Hinloopen <toby@bonaroo.nl>",
   "license": "UNLICENSED",
