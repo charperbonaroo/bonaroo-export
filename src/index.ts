@@ -2,13 +2,14 @@ import { IFile } from "./IFile";
 import * as XLSX from "xlsx";
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+import { get } from "lodash";
 
 (<any>pdfMake).vfs = pdfFonts.pdfMake.vfs;
 
 export async function exportPdf(inputConfig: Readonly<ExportConfig>): Promise<IFile> {
   const config = parseExportConfig(inputConfig);
   const arrayOfArrays = createTable(config);
-  arrayOfArrays.unshift(config.cols);
+  arrayOfArrays.unshift(getHeader(config));
 
   const docDefinition = {
     header: config.name,
@@ -21,7 +22,6 @@ export async function exportPdf(inputConfig: Readonly<ExportConfig>): Promise<IF
       },
     }]
   };
-
 
   const pdf = pdfMake.createPdf(docDefinition);
   const data = await new Promise<ArrayBuffer>((resolve) => pdf.getBuffer(resolve));
@@ -50,10 +50,15 @@ export function exportXlsx(inputConfig: Readonly<ExportConfig>): IFile {
   };
 }
 
+function getHeader(config: IExportConfig): string[] {
+  return config.cols.map((_) => _.label || String(_.prop || ""));
+}
+
 function createTable(config: IExportConfig): any[][] {
   const { rows, cols } = config;
-  const toArray = new Function(`row`, `return [ ${cols.map((_) => `row[${JSON.stringify(_)}]`).join(",")} ]`) as (row: any) => any[];
-  return rows.map(toArray);
+  const colsWithFormatters = cols.map(({ format, prop }) => [ format || (x => x), prop ] as [ TExportFormat, TExportProp ]);
+  const createRow = (row: any) => colsWithFormatters.map(([ format, prop ]) => format(get(row, prop), prop, row));
+  return rows.map(createRow);
 }
 
 function createWorkbook(config: IExportConfig): XLSX.WorkBook {
@@ -62,7 +67,7 @@ function createWorkbook(config: IExportConfig): XLSX.WorkBook {
   workbook.SheetNames.push(sheetName);
 
   const arrayOfArrays = createTable(config);
-  arrayOfArrays.unshift(config.cols);
+  arrayOfArrays.unshift(getHeader(config));
   workbook.Sheets[sheetName] = XLSX.utils.aoa_to_sheet(arrayOfArrays);
 
   return workbook;
@@ -71,7 +76,7 @@ function createWorkbook(config: IExportConfig): XLSX.WorkBook {
 function parseExportConfig(config: Readonly<ExportConfig>): IExportConfig {
   const name = "name" in config && config.name ? config.name : "";
   const rows = config instanceof Array ? config.slice() : config.rows.slice();
-  const cols = "rows" in config && config.rows ? config.rows : inferColsInRows(rows);
+  const cols = "cols" in config && config.cols ? config.cols : inferColsInRows(rows);
 
   return {
     name,
@@ -80,8 +85,14 @@ function parseExportConfig(config: Readonly<ExportConfig>): IExportConfig {
   };
 }
 
-function inferColsInRows(rows: any[]): string[] {
-  return Object.keys(rows[0]);
+function inferColsInRows(rows: any[]): IExportColumn[] {
+  const row = rows[0];
+  if (!row) {
+    return [];
+  }
+  return Object.keys(row)
+    .filter((_) => typeof row[_] !== "object" || row[_] === null)
+    .map((prop) => ({ prop }));
 }
 
 export type ExportConfig = IExportConfig|(Partial<IExportConfig>&Pick<IExportConfig, "rows">)|IExportConfig["rows"];
@@ -89,5 +100,14 @@ export type ExportConfig = IExportConfig|(Partial<IExportConfig>&Pick<IExportCon
 export interface IExportConfig {
   name: string;
   rows: any[];
-  cols: string[];
+  cols: IExportColumn[];
+}
+
+export type TExportProp = string|number|symbol|(string|number|symbol)[];
+export type TExportFormat = (val: any, prop: TExportProp, obj: any) => any;
+
+export interface IExportColumn {
+  prop: TExportProp;
+  label?: string;
+  format?: TExportFormat;
 }
