@@ -1,7 +1,7 @@
 {
   "name": "bonaroo-export",
   "browser": "dist/bonaroo-export.min.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/main.js",
   "files": ["dist"],
   "repository": "git@github.com:charperbonaroo/bonaroo-export.git",
